@@ -28,7 +28,7 @@ SECRET_KEY = '0!i02oj+08$brhdkw-v=gr^*)an++d+1nc4uq)&&iw#v2nn@3r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','freelance-vams.herokuapp.com']
 
 
 # Application definition
