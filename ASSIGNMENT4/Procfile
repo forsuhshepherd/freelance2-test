@@ -1,0 +1,1 @@
+web: gunicorn ASSIGNMENT4.wsgi
