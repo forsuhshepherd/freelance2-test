@@ -28,15 +28,15 @@ SECRET_KEY = '0!i02oj+08$brhdkw-v=gr^*)an++d+1nc4uq)&&iw#v2nn@3r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','freelance-vams.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'freelance-vams.herokuapp.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    #added mannually
+    # added mannually
     'whitenoise.runserver_nostatic',
-    
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    #added mannually
+    # added mannually
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -88,7 +88,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'assignment4',
         'USER': 'root',
-        'PASSWORD': 'Shekhar123#',  # needs to be changed
+        'PASSWORD': '1@Aachal',  # needs to be changed
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -139,13 +139,12 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
-#added mannually
+# added mannually
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\','/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 
 
-
-#activate django-heroku
+# activate django-heroku
 django_heroku.settings(locals())
 
 # Default primary key field type
