@@ -64,21 +64,21 @@ def register(request):
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
-    queryset = Order.objects.all()
+    queryset = orders.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
 
 class OrderCancelAPIView(generics.DestroyAPIView):
-    queryset = Order.objects.all()
+    queryset = orders.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
-	queryset = Order.objects.all()
+	queryset = orders.objects.all()
   serializer_class = OrderSerializer
   permission_classes = [permissions.IsAuthenticated]
 
@@ -96,13 +96,13 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
 
 
 class StockAPIView(generics.ListCreateAPIView):
-  queryset = Stock.objects.all()
+  queryset = stocks.objects.all()
   serializer_class = StockSerializer
   permissions = [permissions.IsAuthenticated]
 
 
 class SingleStockAPIView(generics.RetrieveAPIView):
-  queryset = Stock.objects.all()
+  queryset = stocks.objects.all()
   serializer_class = StockSerializer
   permissions = [permissions.IsAuthenticated]
   lookup_field = 'pk'
@@ -114,7 +114,7 @@ class SectorListCreateView(generics.ListCreateAPIView):
 
 
 class SectorRetrieveUpdateView(generics.RetrieveUpdateAPIView):
-  queryset = Sector.objects.all()
+  queryset = sectors.objects.all()
   allowed_methods = ['get', 'patch']
   serializer_class = SectorSerializer
   lookup_fields = 'pk'
