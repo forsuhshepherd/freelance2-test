@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SectorListCreateView, SectorUpdateView
+from .views import SectorListCreateView, SectorRetrieveUpdateView
 
 
 urlpatterns = [
