@@ -43,7 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    #third party app
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+
+    #myapp
     'rest_assignment.apps.RestAssignmentConfig',
+
 ]
 
 MIDDLEWARE = [
@@ -88,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'assignment4',
         'USER': 'root',
-        'PASSWORD': '1@Aachal',  # needs to be changed
+        'PASSWORD': 'Shekhar123#',  # needs to be changed
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
@@ -151,3 +159,15 @@ django_heroku.settings(locals())
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',  
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+}

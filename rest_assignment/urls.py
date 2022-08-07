@@ -26,8 +26,10 @@ urlpatterns = [
     path("loginform",views.loginAuthentication,name="loginform"),
     path("registerpage",views.registerpage,name="registerpage"),
     path("register",views.register,name="register"),
+    path('addUser/', views.Record.as_view(), name="register"),
+    path('login/', views.Login.as_view(), name="login"),
+    path('logout/', views.Logout.as_view(), name="logout"),
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}), 
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}), 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
