@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
     SectorSerializer, StockSerializer, OrderSerializer
-from .models import users
+from .models import users, stocks, sectors, orders
 
 
 # Create your views here.
@@ -75,9 +75,8 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-
-
 class StockAPIView(generics.ListCreateAPIView):
+  queryset = Stock.objects.all()
   serializer_class = StockSerializer
   permissions = [permissions.IsAuthenticated]
 
