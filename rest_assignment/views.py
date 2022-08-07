@@ -78,6 +78,7 @@ class OrderCancelAPIView(generics.DestroyAPIView):
 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
+	queryset = Order.objects.all()
   serializer_class = OrderSerializer
   permission_classes = [permissions.IsAuthenticated]
 
