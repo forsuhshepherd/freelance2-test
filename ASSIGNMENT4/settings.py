@@ -51,6 +51,7 @@ INSTALLED_APPS = [
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
+    'ws_sectors.apps.WSSectorsConfig'
 
 ]
 
@@ -93,15 +94,17 @@ WSGI_APPLICATION = 'ASSIGNMENT4.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'assignment4',
-        'USER': 'root',
-        'PASSWORD': 'Shekhar123#',  # needs to be changed
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'"
-        }
+        #sqlite
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+        #postgres
+        # 'ENGINE': 'django.db.backends.postgres',
+        # 'NAME': 'assignment4',
+        # 'USER': 'postgres',
+        # 'PASSWORD': 'password',  # 'root',
+        # 'HOST': 'localhost',
+        # 'PORT': '5432',
     }
 }
 
