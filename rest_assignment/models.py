@@ -6,8 +6,14 @@ from django.db import models
 class users(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
+    password = models.CharField(max_length=50, default="")
+    ifLogged = models.BooleanField(default=False)
+    token = models.CharField(max_length=500, null=True, default="")
     available_funds = models.DecimalField(max_digits=5, decimal_places=2)
     blocked_funds = models.DecimalField(max_digits=5, decimal_places=2)
+
+    def __str__(self):
+        return "{} -{}".format(self.name, self.email)
 
 
 class sectors(models.Model):
@@ -56,13 +62,3 @@ class ohlcv(models.Model):
     low = models.DecimalField(max_digits=5, decimal_places=2)
     close = models.DecimalField(max_digits=5, decimal_places=2)
     volume = models.IntegerField()
-
-class User(models.Model):
-    username = models.CharField(max_length=255, null=False)
-    email = models.EmailField(max_length=255, null=False)
-    password = models.CharField(max_length=50)
-    ifLogged = models.BooleanField(default=False)
-    token = models.CharField(max_length=500, null=True, default="")
-
-    def __str__(self):
-        return "{} -{}".format(self.username, self.email)
