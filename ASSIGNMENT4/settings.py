@@ -31,7 +31,7 @@ SECRET_KEY = '0!i02oj+08$brhdkw-v=gr^*)an++d+1nc4uq)&&iw#v2nn@3r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'freelance-vams.herokuapp.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'freelance2-test.herokuapp.com']
 
 
 # Application definition
@@ -96,7 +96,7 @@ WSGI_APPLICATION = 'ASSIGNMENT4.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgresql:///postgres"),
+    "default": env.db("DATABASE_URL", default="sqlite:///db.sqlite"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
