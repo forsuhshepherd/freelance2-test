@@ -16,11 +16,11 @@ import environ
 
 import django_heroku
 
-env = environ.Env()
-
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+env = environ.Env()
+env.read_env(str(BASE_DIR / ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0!i02oj+08$brhdkw-v=gr^*)an++d+1nc4uq)&&iw#v2nn@3r'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool(DJANGO_DEBUG, default=True)
 
 ALLOWED_HOSTS = ['127.0.0.1', 'freelancer2-test.herokuapp.com']
 
@@ -96,7 +96,7 @@ WSGI_APPLICATION = 'ASSIGNMENT4.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    "default": env.db("DATABASE_URL", default="postgresql:///postgres"),
+    "default": env.db("DATABASE_URL", default="sqlite:///db.sqlite"),
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
