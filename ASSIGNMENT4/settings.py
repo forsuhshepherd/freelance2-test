@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 
 import os
 from pathlib import Path
+import environ
+
 import django_heroku
 
 
@@ -51,7 +53,7 @@ INSTALLED_APPS = [
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
-    'ws_sectors.apps.WSSectorsConfig'
+    'ws_sectors.apps.WsSectorsConfig'
 
 ]
 
@@ -93,20 +95,9 @@ WSGI_APPLICATION = 'ASSIGNMENT4.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        #sqlite
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-
-        #postgres
-        # 'ENGINE': 'django.db.backends.postgres',
-        # 'NAME': 'assignment4',
-        # 'USER': 'postgres',
-        # 'PASSWORD': 'password',  # 'root',
-        # 'HOST': 'localhost',
-        # 'PORT': '5432',
-    }
+    "default": env.db("DATABASE_URL", default="postgres:///ass4"),
 }
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 
 # Password validation

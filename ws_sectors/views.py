@@ -1,8 +1,7 @@
 from django.shortcuts import render
-from rest_framework import permissions, viewsets
+from rest_framework import generics, permissions, viewsets
 from .serializers import SectorSerializer
 from .models import Sector
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 
 
 class SectorListCreateView(generics.ListCreateAPIView):
