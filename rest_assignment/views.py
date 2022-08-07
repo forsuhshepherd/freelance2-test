@@ -4,7 +4,7 @@ from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 import json
 import requests
-from rest_framework import generics
+from rest_framework import generics,viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer
@@ -77,7 +77,9 @@ class Login(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer_class = UserLoginSerializer(data=request.data)
         if serializer_class.is_valid(raise_exception=True):
-            return Response(serializer_class.data, status=HTTP_200_OK)
+            status=HTTP_200_OK
+            context = {'data':serializer_class.data,"status":status}
+            return render(request,"baseLoggedin.html",context=context)
         return Response(serializer_class.errors, status=HTTP_400_BAD_REQUEST)
 
 
@@ -99,3 +101,15 @@ def index(request):
 def getUsersDetails(request, username):
     getUsersDetails = users.objects.get(name=username)
     return render(request, "userDetails.html", {'getDetails': getUsersDetails})
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = users.objects.all()
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        pk = self.kwargs.get('pk')
+
+        if pk == "current":
+            return self.request.user
+
+        return super(UserViewSet, self).get_object()

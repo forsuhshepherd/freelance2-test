@@ -106,3 +106,5 @@ class UserLogoutSerializer(serializers.ModelSerializer):
             'token',
             'status',
         )
+
+
