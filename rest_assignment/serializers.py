@@ -1,7 +1,7 @@
 from django.db.models import Q # for queries
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import User
+from .models import User,users
 from django.core.exceptions import ValidationError
 from uuid import uuid4
 
@@ -16,7 +16,9 @@ class UserSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())]
         )
     password = serializers.CharField(max_length=16)
-
+    users_d = users(name = username,email = email,available_funds = "100.00",blocked_funds = "100.00")
+    print(users_d)
+    
     class Meta:
         model = User
         fields = (

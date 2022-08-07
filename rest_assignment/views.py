@@ -1,4 +1,5 @@
 from operator import pos
+from unicodedata import name
 from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 import json
@@ -7,7 +8,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer
-from .models import User
+from .models import User,users
 
 
 
@@ -67,6 +68,8 @@ class Record(generics.ListCreateAPIView):
     # get method handler
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    # users(name= serializer_class.data['username'],email =serializer_class.data['email'],available_funds = "100.00",blocked_funds = "100.00")
+
 
 
 class Login(generics.GenericAPIView):
