@@ -63,7 +63,6 @@ def register(request):
     return render(request, "register.html")
 
 
-
 class OrderListCreateAPIView(generics.ListCreateAPIView):
   serializer_class = OrderSerializer
   permission_classes = [permissions.IsAuthenticated]
@@ -74,6 +73,8 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
     self.perform_create(serializer)
     headers = self.get_success_headers(serializer.data)
     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
 
 
 class StockAPIView(generics.ListCreateAPIView):
