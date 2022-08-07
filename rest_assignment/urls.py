@@ -37,10 +37,10 @@ urlpatterns = [
 
 ]
 urlpatterns += [
-    path('v1/sectors', views.SectorListCreateView.as_view(), name='sector-list-create'),
-    path('v1/sectors/<int:pk>', views.SectorRetrieveUpdateView.as_view(), name='sector-update'),
-    path('v1/stocks', views.StockAPIView.as_view()),
-    path('v1/stocks/<int:pk>', views.SingleStockAPIView.as_view()),
+    path('v1/sectors/', views.SectorListCreateView.as_view(), name='sector-list-create'),
+    path('v1/sectors/<int:pk>/', views.SectorRetrieveUpdateView.as_view(), name='sector-update'),
+    path('v1/stocks/', views.StockAPIView.as_view()),
+    path('v1/stocks/<int:pk>/', views.SingleStockAPIView.as_view()),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
