@@ -55,9 +55,6 @@ INSTALLED_APPS = [
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
-    'ws_sectors.apps.WsSectorsConfig',
-    'ws_stocks.apps.WsStocksConfig',
-
 ]
 
 MIDDLEWARE = [

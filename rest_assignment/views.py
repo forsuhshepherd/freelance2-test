@@ -7,7 +7,8 @@ import requests
 from rest_framework import generics,viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer
+from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
+    SectorSerializer, StockSerializer, OrderSerializer
 from .models import users
 
 
@@ -60,6 +61,42 @@ def register(request):
         if response_codeRegister == 200:
             return redirect("/login")
     return render(request, "register.html")
+
+
+
+class OrderListCreateAPIView(generics.ListCreateAPIView):
+  serializer_class = OrderSerializer
+  permission_classes = [permissions.IsAuthenticated]
+
+  def create(self, request, *args, **kwargs):
+    serializer = self.get_serializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    self.perform_create(serializer)
+    headers = self.get_success_headers(serializer.data)
+    return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class StockAPIView(generics.ListCreateAPIView):
+  serializer_class = StockSerializer
+  permissions = [permissions.IsAuthenticated]
+
+
+class SingleStockAPIView(generics.RetrieveAPIView):
+  serializer_class = StockSerializer
+  permissions = [permissions.IsAuthenticated]
+  lookup_field = 'pk'
+
+
+class SectorListCreateView(generics.ListCreateAPIView):
+  serializer_class = SectorSerializer
+  permission_classes = [permissions.IsAuthenticated]
+
+
+class SectorRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+  allowed_methods = ['get', 'patch']
+  serializer_class = SectorSerializer
+  lookup_fields = 'pk'
+  permission_classes = [permissions.IsAuthenticated]
 
 
 class Record(generics.ListCreateAPIView):
