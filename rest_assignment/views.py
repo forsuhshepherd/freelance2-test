@@ -63,6 +63,20 @@ def register(request):
     return render(request, "register.html")
 
 
+class OrderDetailAPIView(generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+
+
+class OrderCancelAPIView(generics.DestroyAPIView):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
+
+
 class OrderListCreateAPIView(generics.ListCreateAPIView):
   serializer_class = OrderSerializer
   permission_classes = [permissions.IsAuthenticated]
@@ -70,6 +84,11 @@ class OrderListCreateAPIView(generics.ListCreateAPIView):
   def create(self, request, *args, **kwargs):
     serializer = self.get_serializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+    user = request.user
+    if serializer.validated_data['type'] == 'BUY':
+      if user.available_funds < serializer.validated_data['bid_price']:
+        return Response('Insufficient funds, cannot complete the order.')
+				
     self.perform_create(serializer)
     headers = self.get_success_headers(serializer.data)
     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -82,6 +101,7 @@ class StockAPIView(generics.ListCreateAPIView):
 
 
 class SingleStockAPIView(generics.RetrieveAPIView):
+  queryset = Stock.objects.all()
   serializer_class = StockSerializer
   permissions = [permissions.IsAuthenticated]
   lookup_field = 'pk'
@@ -93,6 +113,7 @@ class SectorListCreateView(generics.ListCreateAPIView):
 
 
 class SectorRetrieveUpdateView(generics.RetrieveUpdateAPIView):
+  queryset = Sector.objects.all()
   allowed_methods = ['get', 'patch']
   serializer_class = SectorSerializer
   lookup_fields = 'pk'
