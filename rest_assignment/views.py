@@ -4,7 +4,7 @@ from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 import json
 import requests
-from rest_framework import generics,viewsets, permissions
+from rest_framework import generics, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
@@ -78,47 +78,47 @@ class OrderCancelAPIView(generics.DestroyAPIView):
 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
-	queryset = orders.objects.all()
-  serializer_class = OrderSerializer
-  permission_classes = [permissions.IsAuthenticated]
+    queryset = orders.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-  def create(self, request, *args, **kwargs):
-    serializer = self.get_serializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = request.user
-    if serializer.validated_data['type'] == 'BUY':
-      if user.available_funds < serializer.validated_data['bid_price']:
-        return Response('Insufficient funds, cannot complete the order.')
-				
-    self.perform_create(serializer)
-    headers = self.get_success_headers(serializer.data)
-    return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = request.user
+        if serializer.validated_data['type'] == 'BUY':
+            if user.available_funds < serializer.validated_data['bid_price']:
+                return Response('Insufficient funds, cannot complete the order.')
+
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class StockAPIView(generics.ListCreateAPIView):
-  queryset = stocks.objects.all()
-  serializer_class = StockSerializer
-  permissions = [permissions.IsAuthenticated]
+    queryset = stocks.objects.all()
+    serializer_class = StockSerializer
+    permissions = [permissions.IsAuthenticated]
 
 
 class SingleStockAPIView(generics.RetrieveAPIView):
-  queryset = stocks.objects.all()
-  serializer_class = StockSerializer
-  permissions = [permissions.IsAuthenticated]
-  lookup_field = 'pk'
+    queryset = stocks.objects.all()
+    serializer_class = StockSerializer
+    permissions = [permissions.IsAuthenticated]
+    lookup_field = 'pk'
 
 
 class SectorListCreateView(generics.ListCreateAPIView):
-  serializer_class = SectorSerializer
-  permission_classes = [permissions.IsAuthenticated]
+    serializer_class = SectorSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class SectorRetrieveUpdateView(generics.RetrieveUpdateAPIView):
-  queryset = sectors.objects.all()
-  allowed_methods = ['get', 'patch']
-  serializer_class = SectorSerializer
-  lookup_fields = 'pk'
-  permission_classes = [permissions.IsAuthenticated]
+    queryset = sectors.objects.all()
+    allowed_methods = ['get', 'patch']
+    serializer_class = SectorSerializer
+    lookup_fields = 'pk'
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class Record(generics.ListCreateAPIView):
@@ -136,9 +136,9 @@ class Login(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer_class = UserLoginSerializer(data=request.data)
         if serializer_class.is_valid(raise_exception=True):
-            status=HTTP_200_OK
-            context = {'data':serializer_class.data,"status":status}
-            return render(request,"baseLoggedin.html",context=context)
+            status = HTTP_200_OK
+            context = {'data': serializer_class.data, "status": status}
+            return render(request, "baseLoggedin.html", context=context)
         return Response(serializer_class.errors, status=HTTP_400_BAD_REQUEST)
 
 
@@ -160,6 +160,7 @@ def index(request):
 def getUsersDetails(request, username):
     getUsersDetails = users.objects.get(name=username)
     return render(request, "userDetails.html", {'getDetails': getUsersDetails})
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = users.objects.all()
