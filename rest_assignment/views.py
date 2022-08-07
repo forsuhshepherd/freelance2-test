@@ -4,7 +4,7 @@ from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 import json
 import requests
-from rest_framework import generics,viewsets
+from rest_framework import generics,viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
