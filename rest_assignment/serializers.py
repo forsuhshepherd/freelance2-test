@@ -1,3 +1,5 @@
+from email.policy import default
+from typing_extensions import Required
 from django.db.models import Q  # for queries
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
@@ -16,17 +18,14 @@ class UserSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=users.objects.all())]
     )
     password = serializers.CharField(max_length=16)
-    available_funds = "100.00"
-    blocked_funds = "100.00"
+
 
     class Meta:
         model = users
         fields = (
             'name',
             'email',
-            'password',
-            'available_funds',
-            'blocked_funds'
+            'password'
         )
 
 
@@ -42,30 +41,30 @@ class UserLoginSerializer(serializers.ModelSerializer):
         password = data.get("password", None)
         if not user_id and not password:
             raise ValidationError("Details not entered.")
-        users = None
+        user = None
         # if the email has been passed
         if '@' in user_id:
-            users = users.objects.filter(
+            user = users.objects.filter(
                 Q(email=user_id) &
                 Q(password=password)
             ).distinct()
-            if not users.exists():
+            if not user.exists():
                 raise ValidationError("users credentials are not correct.")
-            users = users.objects.get(email=user_id)
+            user = users.objects.get(email=user_id)
         else:
-            users = users.objects.filter(
+            user = users.objects.filter(
                 Q(name=user_id) &
                 Q(password=password)
             ).distinct()
-            if not users.exists():
+            if not user.exists():
                 raise ValidationError("users credentials are not correct.")
-            users = users.objects.get(name=user_id)
-        if users.ifLogged:
+            user = users.objects.get(name=user_id)
+        if user.ifLogged:
             raise ValidationError("users already logged in.")
-        users.ifLogged = True
+        user.ifLogged = True
         data['token'] = uuid4()
-        users.token = data['token']
-        users.save()
+        user.token = data['token']
+        user.save()
         return data
 
     class Meta:
@@ -88,16 +87,16 @@ class UserLogoutSerializer(serializers.ModelSerializer):
     def validate(self, data):
         token = data.get("token", None)
         print(token)
-        users = None
+        user = None
         try:
-            users = users.objects.get(token=token)
-            if not users.ifLogged:
+            user = users.objects.get(token=token)
+            if not user.ifLogged:
                 raise ValidationError("users is not logged in.")
         except Exception as e:
             raise ValidationError(str(e))
-        users.ifLogged = False
-        users.token = ""
-        users.save()
+        user.ifLogged = False
+        user.token = ""
+        user.save()
         data['status'] = "users is logged out."
         return data
 

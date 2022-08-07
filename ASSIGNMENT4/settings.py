@@ -96,7 +96,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'assignment4',
         'USER': 'root',
-        'PASSWORD': '1@Aachal',  # needs to be changed
+        'PASSWORD': 'Shekhar123#',  # needs to be changed
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'OPTIONS': {
