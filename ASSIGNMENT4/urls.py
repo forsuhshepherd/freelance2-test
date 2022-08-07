@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("rest_assignment.urls")),
     path('api/', include('rest_assignment.urls')),
-    path('', include('ws_sectors.urls'))
+    path('api/v1/', include('ws_sectors.urls'))
     # path('', index, name="index"),
 
 
