@@ -8,3 +8,8 @@ class Stock(models.Model):
   sector = models.ForeignKey(Sector, on_delete=models.CASCADE)
   unallocated = models.Integer()
   total_volume = models.Integer()
+
+  def __str__(self):
+      return self.name
+
+  
