@@ -35,18 +35,17 @@ urlpatterns = [
     re_path(r'^static/(?P<path>.*)$', serve,
             {'document_root': settings.STATIC_ROOT}),
 
-]
-urlpatterns += [
-    path('v1/sectors/', views.SectorListCreateView.as_view(), name='sector-list-create'),
-    path('v1/sectors/<int:pk>/', views.SectorRetrieveUpdateView.as_view(), name='sector-update'),
-    path('v1/stocks/', views.StockAPIView.as_view(), name='stock-list'),
-    path('v1/stocks/<int:pk>/', views.SingleStockAPIView.as_view(), name='stock-detail'),
-    path('v1/orders/', views.OrderListCreateAPIView.as_view(), name='order-list-create'),
-    path('v1/orders/<int:pk>/', views.OrderDetailAPIView.as_view(), name='order-detail'),
-    path('v1/orders/<int:pk>/cancel/', views.OrderCancelAPIView.as_view(), name='order-cancel'),
-    path('v1/market/open/', views.MarketAPIView.as_view(), name='market'),
-    path('v1/market/ohlc/', views.OhlcMarketAPIView.as_view(), name='ohlc'),     # filter using query_param: market_id
+    path('api/v1/sectors/', views.SectorListCreateView.as_view(), name='sector-list-create'),
+    path('api/v1/sectors/<int:pk>/', views.SectorRetrieveUpdateView.as_view(), name='sector-update'),
+    path('api/v1/stocks/', views.StockAPIView.as_view(), name='stock-list'),
+    path('api/v1/stocks/<int:pk>/', views.SingleStockAPIView.as_view(), name='stock-detail'),
+    path('api/v1/orders/', views.OrderListCreateAPIView.as_view(), name='order-list-create'),
+    path('api/v1/orders/<int:pk>/', views.OrderDetailAPIView.as_view(), name='order-detail'),
+    path('api/v1/orders/<int:pk>/cancel/', views.OrderCancelAPIView.as_view(), name='order-cancel'),
+    path('api/v1/market/open/', views.MarketAPIView.as_view(), name='market'),
+    path('api/v1/market/ohlc/', views.OhlcMarketAPIView.as_view(), name='ohlc'),     # filter using query_param: market_id
     # path('v1/market/<int:pk>/ohlc/', views.OhlcvAPIView.as_view(), name='ohlc'),
     path('v1/holdings/', views.StockHoldingsAPIView.as_view(), name='holdings'),
+
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

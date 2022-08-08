@@ -20,6 +20,5 @@ from rest_assignment.views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include("rest_assignment.urls")),
-    path('api/', include('rest_assignment.urls')),
     # path('', index, name="index"),
 ]
