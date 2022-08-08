@@ -137,25 +137,26 @@ class MarketAPIView(generics.GenericAPIView):
     serializer_class = MarketSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
 class OrderMatchAPIView(generics.ListAPIView):
     queryset = orders.objects.all()
+    qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
+    qs_sales = orders.objects.filter(type='SELL').order_by('pk')
     serializer_class = OrderSerializer
+
+    def has_match(self):
+        qs = self.get_queryset()
+        
 
     def get_queryset(self):
         pass
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
-    queryset = orders.objects.all().order_by('type')
-    qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
-    qs_sales = orders.objects.filter(type='SELL').order_by('pk')
-
+    queryset = orders.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
-
-    def is_match(self):
-        pass
 
 
 class OrderCancelAPIView(generics.DestroyAPIView):

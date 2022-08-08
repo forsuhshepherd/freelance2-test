@@ -37,7 +37,7 @@ class stocks(models.Model):
 class orders(models.Model):
     user_id = models.ForeignKey(users, on_delete=models.CASCADE)
     stock_id = models.ForeignKey(stocks, on_delete=models.CASCADE)
-    bid_price = models.DecimalField(max_digits=5, decimal_places=2)
+    bid_price = models.DecimalField(max_digits=5, decimal_places=2)   
     type = models.CharField(max_length=4)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
