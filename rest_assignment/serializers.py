@@ -61,8 +61,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = (
             'name',
             'email',
-            'password'
+            'password',
+            'blocked_funds',
+            'available_funds'
         )
+        read_only = ('blocked_funds', 'available_funds',)
 
 
 class UserLoginSerializer(serializers.ModelSerializer):

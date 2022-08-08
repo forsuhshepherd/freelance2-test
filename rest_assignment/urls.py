@@ -28,6 +28,7 @@ urlpatterns = [
     # path("register",views.register,name="register"),
     path('auth/signup/', views.Record.as_view(), name="register"),
     path('auth/login/', views.Login.as_view(), name="login"),
+    path('auth/profile', views.Record.as_view(), name="profile"),
     path('auth/logout/', views.Logout.as_view(), name="logout"),
     # path('users/',views.UserViewSet.as_view(),name="user"),
     re_path(r'^media/(?P<path>.*)$', serve,
@@ -42,6 +43,7 @@ urlpatterns = [
     path('orders/', views.OrderListCreateAPIView.as_view(), name='order-list-create'),
     path('orders/<int:pk>/', views.OrderDetailAPIView.as_view(), name='order-detail'),
     path('orders/<int:pk>/cancel/', views.OrderCancelAPIView.as_view(), name='order-cancel'),
+    path('orders/natch/', views.OrderMatchAPIView.as_view(), 'order-matching'),
     path('market/open/', views.MarketAPIView.as_view(), name='market-open'),
     path('market/close/', views.MarketAPIView.as_view(), name='market-close'),
     path('market/ohlc/', views.OhlcMarketAPIView.as_view(), name='ohlc'),     # filter using query_param: market_id
