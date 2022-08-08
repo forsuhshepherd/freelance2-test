@@ -45,7 +45,7 @@ urlpatterns = [
     path('api/v1/market/open/', views.MarketAPIView.as_view(), name='market'),
     path('api/v1/market/ohlc/', views.OhlcMarketAPIView.as_view(), name='ohlc'),     # filter using query_param: market_id
     # path('v1/market/<int:pk>/ohlc/', views.OhlcvAPIView.as_view(), name='ohlc'),
-    path('v1/holdings/', views.StockHoldingsAPIView.as_view(), name='holdings'),
+    path('api/v1/holdings/', views.StockHoldingsAPIView.as_view(), name='holdings'),
 
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
