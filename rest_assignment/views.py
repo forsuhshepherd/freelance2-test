@@ -144,19 +144,6 @@ class OrderMatchAPIView(generics.ListAPIView):
     # qs_sales = orders.objects.filter(type='SELL').order_by('pk')
     serializer_class = OrderSerializer        
 
-    def get_queryset(self):
-        assert self.queryset is not None, (
-            "'%s' should either include a `queryset` attribute, "
-            "or override the `get_queryset()` method."
-            % self.__class__.__name__
-        )
-
-        queryset = self.queryset
-        if isinstance(queryset, QuerySet):
-            # Ensure queryset is re-evaluated on each request.
-            queryset = queryset.all()
-        return queryset
-
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
 
@@ -166,6 +153,18 @@ class OrderMatchAPIView(generics.ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
+        response = {
+            'BUYS': [],
+            'SALES': []
+        }
+        for data in serializer:
+            if serializer.data['type'] == 'BUY':
+                response['BUYS'] += data
+                sorted(response['BUYS'], key=lambda x: x['name'])
+            else:
+                response['SALES'] += data
+                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
+
         return Response(serializer.data)
 
 
