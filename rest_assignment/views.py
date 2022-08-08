@@ -162,7 +162,7 @@ class OrderMatchAPIView(generics.ListAPIView):
                 response['SALES'] += data
                 sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
 
-        return Response(serializer.data)
+        return Response(response)
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
