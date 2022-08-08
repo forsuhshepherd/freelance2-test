@@ -44,6 +44,8 @@ class orders(models.Model):
     status = models.CharField(max_length=20)
     bid_volume = models.IntegerField()
     executed_volume = models.IntegerField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
 
 class holdings(models.Model):

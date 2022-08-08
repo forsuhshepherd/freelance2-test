@@ -140,9 +140,39 @@ class MarketAPIView(generics.GenericAPIView):
 
 class OrderMatchAPIView(generics.ListAPIView):
     queryset = orders.objects.all()
-    # qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
-    # qs_sales = orders.objects.filter(type='SELL').order_by('pk')
+    qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
+    qs_sales = orders.objects.filter(type='SELL').order_by('pk')
     serializer_class = OrderSerializer        
+
+    def is_match(self, stock_id):
+        buy_price = self.qs_buys.filter(stock_id=stock_id).first()
+        sell_price = self.qs_sells.filter(stock_id=stock_id).first()
+
+        for obj in self.get_querset().filter(status=PENDING):
+            if buy_price >= sell_price:
+                return True
+            else:
+                return False
+
+    def direct_purchase(self, obj):
+        """
+        In these cases, where stocks are directly bought from the market/company, 
+        the new stock price will be the price at which the user bought the stock
+        """
+        buy_bid_price = self.qs_buys.first().bid_price 
+        current_price = obj.stock_id.price
+        if buy_bid_price >= current_price:
+            stocks.objects.filter(id=obj.stock_id).update(price=buy_bid_price)
+
+    def initial_phase(self):
+        for obj in self.get_queryset():
+            obj_match = self.match(obj.stock_id)
+            if obj.user_id == None and obj.type == 'BUY' or obj.type == 'SELL' and not obj_match:
+                obj.bid_price = obj.stock_id.price
+                obj.bid_volume = obj.stock_id.total_volume
+                obj.save()
+            if obj.type == 'BUY' and not obj_match:
+                self.direct_purchase(obj)
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -153,7 +183,9 @@ class OrderMatchAPIView(generics.ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
+        
         response = {'BUYS':[], 'SALES': []}
+
         for data in serializer.data:
             if serializer.data['type'] == 'BUY':
                 response['BUYS'] += data
