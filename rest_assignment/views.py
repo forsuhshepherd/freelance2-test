@@ -160,7 +160,8 @@ class OrderMatchAPIView(generics.ListAPIView):
                 sorted(response['BUYS'], key=lambda x: x['name'])
             else:
                 response['SALES'] += data
-                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True) 
+                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
+
         return Response(response)
 
 
