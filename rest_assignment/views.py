@@ -140,13 +140,9 @@ class MarketAPIView(generics.GenericAPIView):
 
 class OrderMatchAPIView(generics.ListAPIView):
     queryset = orders.objects.all()
-    qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
-    qs_sales = orders.objects.filter(type='SELL').order_by('pk')
-    serializer_class = OrderSerializer
-
-    def has_match(self):
-        qs = self.get_queryset()
-        
+    # qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
+    # qs_sales = orders.objects.filter(type='SELL').order_by('pk')
+    serializer_class = OrderSerializer        
 
     def get_queryset(self):
         pass
