@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.views.static import serve
 
 urlpatterns = [
-    path('', views.base, name="base"),
+    # path('', views.base, name="base"),
     # path("login",views.login,name="login"),
     # path("loginform",views.loginAuthentication,name="loginform"),
     # path("registerpage",views.registerpage,name="registerpage"),
