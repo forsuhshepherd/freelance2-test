@@ -157,13 +157,13 @@ class OrderMatchAPIView(generics.ListAPIView):
             'BUYS': [],
             'SALES': []
         }
-        for data in serializer:
-            if serializer.data['type'] == 'BUY':
-                response['BUYS'] += data
-                sorted(response['BUYS'], key=lambda x: x['name'])
-            else:
-                response['SALES'] += data
-                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
+        # for data in serializer:
+        #     if serializer.data['type'] == 'BUY':
+        #         response['BUYS'] += data
+        #         sorted(response['BUYS'], key=lambda x: x['name'])
+        #     else:
+        #         response['SALES'] += data
+        #         sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
 
         return Response(serializer.data)
 
