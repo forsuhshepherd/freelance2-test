@@ -3,6 +3,7 @@ from unicodedata import name
 from wsgiref.util import request_uri
 from django.shortcuts import render, redirect
 from django.db.models.query import QuerySet
+from django.db.models import Q
 import json
 import requests
 from rest_framework import generics, viewsets, permissions
@@ -145,10 +146,16 @@ class OrderMatchAPIView(generics.ListAPIView):
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
-    queryset = orders.objects.all()
+    queryset = orders.objects.all().order_by('type')
+    qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
+    qs_sales = orders.objects.filter(type='SELL').order_by('pk')
+
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
+
+    def is_match(self):
+        pass
 
 
 class OrderCancelAPIView(generics.DestroyAPIView):
@@ -159,7 +166,7 @@ class OrderCancelAPIView(generics.DestroyAPIView):
 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
-    queryset = orders.objects.all()
+    queryset = orders.objects.filter(Q(type='BUY') | Q(type='SELL'))
     serializer_class = OrderSerializer
     permission_classes = [permissions.IsAuthenticated]
 
