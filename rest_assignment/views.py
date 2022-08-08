@@ -154,7 +154,7 @@ class OrderMatchAPIView(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
         response = {'BUYS':[], 'SALES': []}
-        for data in serializer:
+        for data in serializer.data:
             if serializer.data['type'] == 'BUY':
                 response['BUYS'] += data
                 sorted(response['BUYS'], key=lambda x: x['name'])
