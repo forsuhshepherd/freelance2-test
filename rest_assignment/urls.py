@@ -43,7 +43,7 @@ urlpatterns = [
     path('orders/', views.OrderListCreateAPIView.as_view(), name='order-list-create'),
     path('orders/<int:pk>/', views.OrderDetailAPIView.as_view(), name='order-detail'),
     path('orders/<int:pk>/cancel/', views.OrderCancelAPIView.as_view(), name='order-cancel'),
-    # path('orders/match/', views.OrderMatchAPIView.as_view(), 'order-matching'),
+    path('orders/match/', views.OrderMatchAPIView.as_view(), name='order-matching'),
     path('market/open/', views.MarketAPIView.as_view(), name='market-open'),
     path('market/close/', views.MarketAPIView.as_view(), name='market-close'),
     path('market/ohlc/', views.OhlcMarketAPIView.as_view(), name='ohlc'),     # filter using query_param: market_id

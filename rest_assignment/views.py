@@ -138,34 +138,31 @@ class MarketAPIView(generics.GenericAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
 
-# class OrderMatchAPIView(generics.ListAPIView):
-#     queryset = orders.objects.all()
-#     # qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
-#     # qs_sales = orders.objects.filter(type='SELL').order_by('pk')
-#     serializer_class = OrderSerializer        
+class OrderMatchAPIView(generics.ListAPIView):
+    queryset = orders.objects.all()
+    # qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
+    # qs_sales = orders.objects.filter(type='SELL').order_by('pk')
+    serializer_class = OrderSerializer        
 
-#     def list(self, request, *args, **kwargs):
-#         queryset = self.filter_queryset(self.get_queryset())
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
 
-#         page = self.paginate_queryset(queryset)
-#         if page is not None:
-#             serializer = self.get_serializer(page, many=True)
-#             return self.get_paginated_response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
-#         serializer = self.get_serializer(queryset, many=True)
-#         response = {
-#             'BUYS': [],
-#             'SALES': []
-#         }
-#         # for data in serializer:
-#         #     if serializer.data['type'] == 'BUY':
-#         #         response['BUYS'] += data
-#         #         sorted(response['BUYS'], key=lambda x: x['name'])
-#         #     else:
-#         #         response['SALES'] += data
-#         #         sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
+        serializer = self.get_serializer(queryset, many=True)
+        response = {'BUYS':[], 'SALES': []}
+        for data in serializer:
+            if serializer.data['type'] == 'BUY':
+                response['BUYS'] += data
+                sorted(response['BUYS'], key=lambda x: x['name'])
+            else:
+                response['SALES'] += data
+                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
 
-#         return Response(serializer.data)
+        return Response(serializer.data)
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
