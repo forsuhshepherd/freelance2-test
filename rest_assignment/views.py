@@ -8,8 +8,8 @@ from rest_framework import generics, viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
-    SectorSerializer, StockSerializer, OrderSerializer
-from .models import users, stocks, sectors, orders
+    SectorSerializer, StockSerializer, OrderSerializer, MarketSerializer, OhlcvSerializer, HoldingsSerializer
+from .models import users, stocks, sectors, orders, ohlcv, holdings, market_day
 
 
 # Create your views here.
@@ -61,6 +61,79 @@ def register(request):
         if response_codeRegister == 200:
             return redirect("/login")
     return render(request, "register.html")
+
+
+class StockHoldingsAPIView(generics.ListAPIView):
+    queryset = holdings.objects.all()
+    serializer_class = HoldingsSerializer
+    permissions_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
+        queryset = self.get_queryset.filter(user_id=self.request.user)
+        if isinstance(queryset, QuerySet):
+            # Ensure queryset is re-evaluated on each request.
+            queryset = queryset.all()
+        return queryset
+
+
+# class OhlcvAPIView(generics.ListAPIView):
+#     queryset = ohlcv.objects.all()
+#     serializer_class = OhlcvSerializer
+#     lookup_field = 'pk'
+
+#     # get market day object
+#     def get_object(self):
+#         queryset = market_day.objects.all()
+#         # Perform the lookup filtering.
+#         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+#         assert lookup_url_kwarg in self.kwargs, (
+#             'Expected view %s to be called with a URL keyword argument '
+#             'named "%s". Fix your URL conf, or set the `.lookup_field` '
+#             'attribute on the view correctly.' %
+#             (self.__class__.__name__, lookup_url_kwarg)
+#         )
+#         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+#         obj = get_object_or_404(queryset, **filter_kwargs)
+#         # May raise a permission denied
+#         self.check_object_permissions(self.request, obj)
+#         return obj
+
+#     def list(self, request, *args, **kwargs):
+#         instance = self.get_object()
+#         queryset = self.filter_queryset(self.get_queryset().filter(marked_id=instance))
+#         page = self.paginate_queryset(queryset)
+#         if page is not None:
+#             serializer = self.get_serialzier(page, many=True)
+#             return self.get_paginated_response(serializer.data)
+#         serializer = self.get_serializer(queryset, many=True)
+#         return Response(seralizer.data)
+
+
+class OhlcMarketAPIView(generics.ListAPIView):
+    queryset = ohlcv.objects.all()
+    serializer_class = OhlcvSerializer
+
+    def get_queryset(self):
+        market_id = self.request.query_params.get('market_id')
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
+        queryset = self.queryset.filter(market_id=market_id)
+        if isinstance(queryset, QuerySet):
+            queryset = queryset.all()
+        return queryset
+
+
+class MarketAPIView(generics.GenericAPIView):
+    serializer_class = MarketSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):

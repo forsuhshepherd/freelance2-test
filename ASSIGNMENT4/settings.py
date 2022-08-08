@@ -97,7 +97,7 @@ WSGI_APPLICATION = 'ASSIGNMENT4.wsgi.application'
 DATABASES = {
     "default": env.db('DATABASE_URL'),
 }
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+# DATABASES["default"]["ATOMIC_REQUESTS"] = True
 
 
 # Password validation
@@ -148,6 +148,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media').replace('\\', '/')
 
 # activate django-heroku
 django_heroku.settings(locals())
+
+del DATABASES['default']['OPTIONS']['sslmode']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

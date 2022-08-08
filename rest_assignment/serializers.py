@@ -3,9 +3,27 @@ from typing_extensions import Required
 from django.db.models import Q  # for queries
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import users, sectors, stocks, orders
+from .models import users, sectors, stocks, orders, market_day, ohlcv, holdings
 from django.core.exceptions import ValidationError
 from uuid import uuid4
+
+
+class HoldingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = holdings
+        fields = '__all__'
+
+
+class OhlcvSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ohlcv
+        fields = '__all__'
+
+
+class MarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = market_day
+        fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
