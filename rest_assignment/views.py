@@ -8,7 +8,7 @@ import json
 import requests
 from rest_framework import generics, viewsets, permissions
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
+from rest_framework import status
 from .serializers import UserSerializer, UserLoginSerializer, UserLogoutSerializer, \
     SectorSerializer, StockSerializer, OrderSerializer, MarketSerializer, OhlcvSerializer, HoldingsSerializer
 from .models import users, stocks, sectors, orders, ohlcv, holdings, market_day
@@ -139,12 +139,17 @@ class MarketAPIView(generics.GenericAPIView):
 
 
 class OrderMatchAPIView(generics.ListAPIView):
-    queryset = orders.objects.all()
+    queryset = orders.objects.all().filter(
+        Q(type='BUY') | Q(type='SELL')).distinct()
     qs_buys = orders.objects.filter(type='BUY').order_by('-pk')
     qs_sales = orders.objects.filter(type='SELL').order_by('pk')
-    serializer_class = OrderSerializer        
+    serializer_class = OrderSerializer
 
     def is_match(self, stock_id):
+        """
+        An order for stocks (a stock model instance) matches another(s) when it buy bid_price is >= the sell bid_price
+        of any other sell orders.
+        """
         buy_price = self.qs_buys.filter(stock_id=stock_id).first()
         sell_price = self.qs_sells.filter(stock_id=stock_id).first()
 
@@ -159,12 +164,18 @@ class OrderMatchAPIView(generics.ListAPIView):
         In these cases, where stocks are directly bought from the market/company, 
         the new stock price will be the price at which the user bought the stock
         """
-        buy_bid_price = self.qs_buys.first().bid_price 
+        buy_bid_price = self.qs_buys.filter(stock_id=obj.stock_id)[0].bid_price
         current_price = obj.stock_id.price
         if buy_bid_price >= current_price:
             stocks.objects.filter(id=obj.stock_id).update(price=buy_bid_price)
 
     def initial_phase(self):
+        """
+        In the initial phase, when no users own any stocks and hence can't sell any, 
+        the buy orders will be fulfilled by looking at the available 
+        stocks in the respective stock row. 
+        This will also apply in cases where no sell order is low enough to match any of the buy orders
+        """
         for obj in self.get_queryset():
             obj_match = self.match(obj.stock_id)
             if obj.user_id == None and obj.type == 'BUY' or obj.type == 'SELL' and not obj_match:
@@ -183,50 +194,59 @@ class OrderMatchAPIView(generics.ListAPIView):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        
-        response = {'BUYS':[], 'SALES': []}
+
+        response = {}
 
         for data in serializer.data:
             if serializer.data['type'] == 'BUY':
                 response['BUYS'] += data
                 sorted(response['BUYS'], key=lambda x: x['name'])
             else:
-                response['SALES'] += data
-                sorted(response['BUYS'], key=lambda x: x['name'], reverse=True)
-
-        return Response(response)
+                sales += data
+                sorted(sales, key=lambda x: x['name'], reverse=True)
+                response.update(sales)
+        return Response(response, status=status.HTTP_200_OK)
 
 
 class OrderDetailAPIView(generics.RetrieveAPIView):
     queryset = orders.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
 
 class OrderCancelAPIView(generics.DestroyAPIView):
     queryset = orders.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
     lookup_field = 'pk'
 
 
 class OrderListCreateAPIView(generics.ListCreateAPIView):
     queryset = orders.objects.filter(Q(type='BUY') | Q(type='SELL'))
     serializer_class = OrderSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = request.user
-        if serializer.validated_data['type'] == 'BUY':
-            if user.available_funds < serializer.validated_data['bid_price']:
-                return Response('Insufficient funds, cannot complete the order.')
+        if serializer.is_valid(raise_exception=True):
+            user = request.user
+            if serializer.validated_data['type'] == 'BUY':
+                # making a buy order
+                if user.available_funds < serializer.validated_data['bid_price']:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
+            if serializer.validated_data['type'] == 'SELL':
+                # making a sell order
+                stock = stocks.objects.filter(
+                    serializer.validated_data['stock_id'])
+                if stock.total_volume < serializer.data['bid_volume']:
+                    return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class StockAPIView(generics.ListCreateAPIView):
@@ -260,6 +280,15 @@ class Record(generics.ListCreateAPIView):
     queryset = users.objects.all()
     serializer_class = UserSerializer
     # users(name= serializer_class.data['username'],email =serializer_class.data['email'],available_funds = "100.00",blocked_funds = "100.00")
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class Login(generics.GenericAPIView):
@@ -273,7 +302,7 @@ class Login(generics.GenericAPIView):
             status = HTTP_200_OK
             context = {'data': serializer_class.data, "status": status}
             return render(request, "baseLoggedin.html", context=context)
-        return Response(serializer_class.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(generics.GenericAPIView):
@@ -284,7 +313,7 @@ class Logout(generics.GenericAPIView):
         serializer_class = UserLogoutSerializer(data=request.data)
         if serializer_class.is_valid(raise_exception=True):
             return Response(serializer_class.data, status=HTTP_200_OK)
-        return Response(serializer_class.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(status=HTTP_400_BAD_REQUEST)
 
 
 def index(request):

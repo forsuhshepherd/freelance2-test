@@ -9,39 +9,45 @@ from uuid import uuid4
 
 
 class HoldingsSerializer(serializers.ModelSerializer):
+    errors = None
     class Meta:
         model = holdings
         fields = '__all__'
 
 
 class OhlcvSerializer(serializers.ModelSerializer):
+    errors = None
     class Meta:
         model = ohlcv
         fields = '__all__'
 
 
 class MarketSerializer(serializers.ModelSerializer):
+    errors = None    
     class Meta:
         model = market_day
         fields = '__all__'
 
 
 class OrderSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = orders
-    fields = '__all__'
+    errors = None
+    class Meta:
+        model = orders
+        fields = '__all__'
 
 
 class StockSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = stocks
-    fields = '__all__'
+    errors = None
+    class Meta:
+        model = stocks
+        fields = '__all__'
 
 
 class SectorSerializer(serializers.ModelSerializer):
-  class Meta:
-    model = sectors
-    fields = '__all__'
+    errors = None
+    class Meta:
+        model = sectors
+        fields = '__all__'
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,7 +60,6 @@ class UserSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=users.objects.all())]
     )
     password = serializers.CharField(max_length=16)
-
 
     class Meta:
         model = users
