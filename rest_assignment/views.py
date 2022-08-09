@@ -169,16 +169,20 @@ class OrderMatchAPIView(generics.ListAPIView):
         if buy_bid_price >= current_price:
             stocks.objects.filter(id=obj.stock_id).update(price=buy_bid_price)
 
-    def initial_phase(self):
+    def is_initial(self, stock_id):
+        if self.qs_sales.filter(user_id=None) or not self.is_match(stock_id):  # no users issuing sell orders
+            return True
+
+    def initial_phase(self, stock_id):
         """
         In the initial phase, when no users own any stocks and hence can't sell any, 
         the buy orders will be fulfilled by looking at the available 
         stocks in the respective stock row. 
         This will also apply in cases where no sell order is low enough to match any of the buy orders
         """
-        for obj in self.get_queryset():
+        for obj in self.get_queryset().filter(stock_id=stock_id):
             obj_match = self.match(obj.stock_id)
-            if obj.user_id == None and obj.type == 'BUY' or obj.type == 'SELL' and not obj_match:
+            if self.is_initial(obj.stock_id):
                 obj.bid_price = obj.stock_id.price
                 obj.bid_volume = obj.stock_id.total_volume
                 obj.save()
@@ -202,9 +206,8 @@ class OrderMatchAPIView(generics.ListAPIView):
                 response['BUYS'] += data
                 sorted(response['BUYS'], key=lambda x: x['name'])
             else:
-                sales += data
-                sorted(sales, key=lambda x: x['name'], reverse=True)
-                response.update(sales)
+                response['SALES'] += data
+                sorted(response['SALES'], key=lambda x: x['name'], reverse=True)
         return Response(response, status=status.HTTP_200_OK)
 
 
@@ -279,11 +282,12 @@ class Record(generics.ListCreateAPIView):
     # get method handler
     queryset = users.objects.all()
     serializer_class = UserSerializer
+
     # users(name= serializer_class.data['username'],email =serializer_class.data['email'],available_funds = "100.00",blocked_funds = "100.00")
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
-            serializer.is_valid(raise_exception=True)
+            serializer.is_valid()
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -298,11 +302,12 @@ class Login(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer_class = UserLoginSerializer(data=request.data)
-        if serializer_class.is_valid(raise_exception=True):
-            status = HTTP_200_OK
-            context = {'data': serializer_class.data, "status": status}
+        try:
+            serializer_class.is_valid(raise_exception=True)
+            context = {'token': serializer_class.data['token']}
             return render(request, "baseLoggedin.html", context=context)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        except:
+            return Response(serializer_class.data, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Logout(generics.GenericAPIView):
@@ -312,8 +317,8 @@ class Logout(generics.GenericAPIView):
     def post(self, request, *args, **kwargs):
         serializer_class = UserLogoutSerializer(data=request.data)
         if serializer_class.is_valid(raise_exception=True):
-            return Response(serializer_class.data, status=HTTP_200_OK)
-        return Response(status=HTTP_400_BAD_REQUEST)
+            return Response(serializer_class.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def index(request):
