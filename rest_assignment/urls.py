@@ -28,7 +28,7 @@ urlpatterns = [
     # path("register",views.register,name="register"),
     path('auth/signup/', views.Record.as_view(), name="register"),
     path('auth/login/', views.Login.as_view(), name="login"),
-    path('auth/profile', views.Record.as_view(), name="profile"),
+    path('auth/profile', views.UserProfileView.as_view(), name="profile"),
     path('auth/logout/', views.Logout.as_view(), name="logout"),
     # path('users/',views.UserViewSet.as_view(),name="user"),
     re_path(r'^media/(?P<path>.*)$', serve,

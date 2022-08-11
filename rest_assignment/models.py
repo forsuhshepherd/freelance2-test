@@ -3,6 +3,17 @@ from django.db import models
 # Create your models here.
 
 
+ORDER_STATUS = [
+    ('P', 'Pending'),
+    ('C', 'Completed')
+]
+
+ORDER_TYPE = [
+    ('B', 'Buy'),
+    ('S', 'Sell')
+]
+
+
 class users(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
@@ -39,9 +50,11 @@ class orders(models.Model):
     stock_id = models.ForeignKey(stocks, on_delete=models.CASCADE)
     bid_price = models.DecimalField(max_digits=5, decimal_places=2)   
     type = models.CharField(max_length=4)
+    # type = models.CharField(max_lenghth=2, choices=ORDER_TYPE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20)
+    # status = models.CharField(max_lenghth=2, choices=ORDER_STATUS)
     bid_volume = models.IntegerField()
     executed_volume = models.IntegerField()
     created_on = models.DateTimeField(auto_now_add=True)
