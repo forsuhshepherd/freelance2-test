@@ -8,7 +8,6 @@ from django.shortcuts import render, redirect
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.contrib.auth import login as rest_login, get_user_model
-from django.contrib.auth.signals import user_logged_out
 from django.http import JsonResponse
 
 from rest_framework import status
