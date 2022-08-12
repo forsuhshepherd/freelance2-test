@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
@@ -14,41 +15,42 @@ ORDER_TYPE = [
 ]
 
 
-class users(models.Model):
+class User(AbstractUser):
+    first_name = None
+    last_name = None
+    # email and password already present
     name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=50)
-    password = models.CharField(max_length=50)
-    ifLogged = models.BooleanField(default=False)
-    token = models.CharField(max_length=500, null=True, default="")
-    available_funds = models.DecimalField(max_digits=5, decimal_places=2,default="100.00")
-    blocked_funds = models.DecimalField(max_digits=5, decimal_places=2,default="100.00")
+    available_funds = models.DecimalField(max_digits=8, decimal_places=2,default="400000.00")
+    blocked_funds = models.DecimalField(max_digits=8, decimal_places=2,default="400000.00")
+
+    REQUIRED_FIELDS =['email']
 
     def __str__(self):
         return "{} -{}".format(self.name, self.email)
 
 
-class sectors(models.Model):
+class Sector(models.Model):
     name = models.CharField(max_length=50)
     description = models.CharField(max_length=200)
 
 
-class market_day(models.Model):
+class Market_Day(models.Model):
     day = models.IntegerField()
     status = models.CharField(max_length=10)
 
 
-class stocks(models.Model):
+class Stock(models.Model):
     name = models.CharField(max_length=20)
     total_volume = models.IntegerField()
     unallocated = models.IntegerField()
-    price = models.DecimalField(max_digits=5, decimal_places=2)
-    sector_id = models.ForeignKey(sectors, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    sector_id = models.ForeignKey(Sector, on_delete=models.CASCADE)
 
 
-class orders(models.Model):
-    user_id = models.ForeignKey(users, on_delete=models.CASCADE)
-    stock_id = models.ForeignKey(stocks, on_delete=models.CASCADE)
-    bid_price = models.DecimalField(max_digits=5, decimal_places=2)   
+class Order(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    stock_id = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    bid_price = models.DecimalField(max_digits=8, decimal_places=2)   
     type = models.CharField(max_length=4)
     # type = models.CharField(max_lenghth=2, choices=ORDER_TYPE)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,19 +63,19 @@ class orders(models.Model):
     updated_on = models.DateTimeField(auto_now=True)
 
 
-class holdings(models.Model):
-    user_id = models.ForeignKey(users, on_delete=models.CASCADE)
-    stock_id = models.ForeignKey(stocks, on_delete=models.CASCADE)
+class Holding(models.Model):
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    stock_id = models.ForeignKey(Stock, on_delete=models.CASCADE)
     volume = models.IntegerField()
-    bid_price = models.DecimalField(max_digits=5, decimal_places=2)
+    bid_price = models.DecimalField(max_digits=8, decimal_places=2)
     brought_on = models.DateField()
 
 
-class ohlcv(models.Model):
-    market_id = models.ForeignKey(market_day, on_delete=models.CASCADE)
-    stock_id = models.IntegerField()
-    open = models.DecimalField(max_digits=5, decimal_places=2)
-    high = models.DecimalField(max_digits=5, decimal_places=2)
-    low = models.DecimalField(max_digits=5, decimal_places=2)
-    close = models.DecimalField(max_digits=5, decimal_places=2)
+class Ohlcv(models.Model):
+    market_id = models.ForeignKey(Market_Day, on_delete=models.CASCADE)
+    stock_id = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    open = models.DecimalField(max_digits=8, decimal_places=2)
+    high = models.DecimalField(max_digits=8, decimal_places=2)
+    low = models.DecimalField(max_digits=8, decimal_places=2)
+    close = models.DecimalField(max_digits=8, decimal_places=2)
     volume = models.IntegerField()

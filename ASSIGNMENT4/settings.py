@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import environ
 import os
 from pathlib import Path
+from datetime import timedelta
 
 import django_heroku
 
@@ -50,12 +51,15 @@ INSTALLED_APPS = [
 
     # third party app
     'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
+    # 'rest_framework.authtoken',
+    'knox',
+    'corsheaders',
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
 ]
+
+AUTH_USER_MODEL = 'rest_assignment.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,6 +67,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -153,16 +158,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
 }
 
+REST_KNOX = {
+    'AUTH_TOKEN_CHARACTER_LENGTH': 64,
+    'TOKEN_TTL': timedelta(hours=10),
+    # 'USER_SERIALIZER': 'rest_assignment.serializers.TokenLoginSerializer'
+}
+
 # activate django-heroku
 django_heroku.settings(locals())
 
-# del DATABASES['default']['OPTIONS']['sslmode']
+del DATABASES['default']['OPTIONS']['sslmode']
