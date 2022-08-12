@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate, get_user_model
 
 from rest_framework import serializers
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.validators import UniqueValidator
 
 from .models import User, Sector, Stock, Order, Market_Day, Ohlcv, Holding
@@ -86,39 +85,6 @@ class UserSerializer(serializers.ModelSerializer):
             'available_funds'
         )
         read_only_fields = ('id', 'blocked_funds', 'available_funds')
-
-
-class TokenLoginSerializer(AuthTokenSerializer):
-    """
-    Login using email or username
-    """
-    username = serializers.CharField(label=_('Username'), required=False)
-    email = serializers.EmailField(label=_('Email'), write_only=True)
-
-    def validate(self, attrs):
-        username = attrs.get('username')
-        password = attrs.get('password')
-        email = attrs.get('email')
-
-        if username and password:
-            user = authenticate(request=self.context.get('request'),
-                                username=username, password=password)
-
-            # The authenticate call simply returns None for is_active=False
-            # users. (Assuming the default ModelBackend authentication
-            # backend.)
-            if not user:
-                msg = _('Unable to log in with provided credentials.')
-                raise serializers.ValidationError(msg, code='authorization')
-        elif email and password:
-            user = authenticate(request=self.context.get('request'),
-            email=email, password=password)
-        else:
-            msg = _('Must include "username" or "email" and "password".')
-            raise serializers.ValidationError(msg, code='authorization')
-
-        attrs['user'] = user
-        return attrs
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

@@ -11,8 +11,6 @@ from django.contrib.auth import login as rest_login, get_user_model
 from django.contrib.auth.signals import user_logged_out
 from django.http import JsonResponse
 
-from knox import views as knox_views
-
 from rest_framework import status
 from rest_framework import generics, viewsets, permissions, views
 
@@ -364,59 +362,6 @@ class Record(generics.CreateAPIView):
 class UserProfileView(generics.ListAPIView):
     queryset = User.objects.all().filter(is_superuser=False)
     serializer_class = serializers.UserSerializer
-
-
-# login using django-rest-knox
-class LoginView(knox_views.LoginView):
-    permission_classes = [permissions.AllowAny]
-    serializer_class = AuthTokenSerializer
-
-    def post(self, request, format=None):
-        serializer = AuthTokenSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data['user']
-        rest_login(request, user)
-        return super(LoginView, self).post(request, format=None)
-
-
-class LogoutView(knox_views.LogoutView):
-    permission_classes = (permissions.AllowAny,)
-    
-    def post(self, request, format=None):
-        # print(request.headers['Authorization'], 'headers')
-        user_logged_out.send(sender=request.user.__class__,
-                             request=request, user=request.user)
-        print(type(request.headers))
-        print(type(request._auth))
-        # request._auth.delete()
-        return Response(None, status=status.HTTP_204_NO_CONTENT)
-
-
-
-class Login(generics.GenericAPIView):
-    # get method handler
-    queryset = User.objects.all()
-    serializer_class = serializers.UserLoginSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer_class = serializers.UserLoginSerializer(data=request.data)
-        try:
-            serializer_class.is_valid(raise_exception=True)
-            context = {'token': serializer_class.data['token']}
-            return render(request, "baseLoggedin.html", context=context)
-        except:
-            return Response(serializer_class.data, status=status.HTTP_400_BAD_REQUEST)
-
-
-class Logout(generics.GenericAPIView):
-    queryset = User.objects.all()
-    serializer_class = serializers.UserLogoutSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer_class = serializers.UserLogoutSerializer(data=request.data)
-        if serializer_class.is_valid(raise_exception=True):
-            return Response(serializer_class.data, status=status.HTTP_200_OK)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 def index(request):

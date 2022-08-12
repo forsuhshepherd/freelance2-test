@@ -51,9 +51,9 @@ INSTALLED_APPS = [
 
     # third party app
     'rest_framework',
-    # 'rest_framework.authtoken',
-    'knox',
+    'rest_framework.authtoken',
     'corsheaders',
+    'djoser',
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
@@ -158,20 +158,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'knox.auth.TokenAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
 }
 
-REST_KNOX = {
-    'AUTH_TOKEN_CHARACTER_LENGTH': 64,
-    'TOKEN_TTL': timedelta(hours=10),
-    # 'USER_SERIALIZER': 'rest_assignment.serializers.TokenLoginSerializer'
+DJOSER = {
+    'LOGIN_FIELD': 'username',
+    
 }
 
 # activate django-heroku

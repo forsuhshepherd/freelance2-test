@@ -19,21 +19,13 @@ from django.urls import path, re_path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.static import serve
-from rest_framework import permissions
+from djoser.views import TokenCreateView, TokenDestroyView
 
 
 urlpatterns = [
-    # path('', views.base, name="base"),
-    # path("login",views.login,name="login"),
-    # path("loginform",views.loginAuthentication,name="loginform"),
-    # path("registerpage",views.registerpage,name="registerpage"),
-    # path("register",views.register,name="register"),
-
     path('auth/signup/', views.Record.as_view(), name="register"),
-    # path('auth/login/', views.Login.as_view(), name="login"),
-    # path('auth/login/', obtain_auth_token(http_method_names=['POST', 'GET'],), name='auth-token'),
-    path('auth/login/', views.LoginView.as_view(), name='login'),
-    path('auth/logout/', views.LogoutView.as_view(), name='logout'),
+    re_path(r'^auth/login/?$', TokenCreateView.as_view(), name='login'),
+    re_path(r'^auth/logout/?$', TokenDestroyView.as_view(), name='logout'),
 
     path('auth/profile/', views.UserProfileView.as_view(), name="profile"),
     # path('users/',views.UserViewSet.as_view(),name="user"),
