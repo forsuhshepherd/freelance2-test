@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import environ
 import os
 from pathlib import Path
+from datetime import timedelta
 
 import django_heroku
 
@@ -51,11 +52,14 @@ INSTALLED_APPS = [
     # third party app
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
+    'corsheaders',
+    'djoser',
 
     # myapp
     'rest_assignment.apps.RestAssignmentConfig',
 ]
+
+AUTH_USER_MODEL = 'rest_assignment.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -63,6 +67,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -160,6 +165,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
+}
+
+DJOSER = {
+    'LOGIN_FIELD': 'username',
+    
 }
 
 # activate django-heroku
